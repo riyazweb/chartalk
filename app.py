@@ -5,7 +5,6 @@ import gradio as gr
 from src.gradio_demo import SadTalker
 from src.utils.text2speech import TTSTalker
 from huggingface_hub import snapshot_download
-import openai
 
 
 def get_source_image(image):
@@ -53,19 +52,11 @@ def sadtalker_demo():
                         with gr.Column(variant='panel'):
                             input_text = gr.Textbox(label="Generating audio from text", lines=5,
                                                     placeholder="Alternatively, you can genreate the audio from text using @Coqui.ai TTS.")
-                            response = openai.ChatCompletion.create(
-                                model="gpt-4",
-                                messages=[
-                                    {"role": "user", "content": f"imagine you are karl max and replt to me for this question : {input_text}  in 15 words"}]
-                            )
-
-                            OP = response['choices'][0]['message']['content']
-                            OP = OP.replace('"', '')
                             tts = gr.Button(
-                                'Generate audio', elem_id="sadtalker_audio_generate", variant='primary')
+                                'Generate', elem_id="sadtalker_audio_generate", variant='primary')
                             tts.click(fn=tts_talker.test, inputs=[
-                                      OP], outputs=[driven_audio])
-
+                                      input_text], outputs=[driven_audio])
+                           
             with gr.Column(variant='panel'):
                 with gr.Tabs(elem_id="sadtalker_checkbox"):
                     with gr.TabItem('Settings'):
@@ -174,7 +165,6 @@ def sadtalker_demo():
 
 
 if __name__ == "__main__":
-
     demo = sadtalker_demo()
     demo.queue(max_size=10)
     demo.launch(debug=True, share=True)
